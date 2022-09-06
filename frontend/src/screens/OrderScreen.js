@@ -26,14 +26,14 @@ const OrderScreen = ({ match, history }) => {
   const orderDetails = useSelector((state) => state.orderDetails)
   const { order, loading, error } = orderDetails
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { userInfo } = userLogin
-
   const orderPay = useSelector((state) => state.orderPay)
   const { loading: loadingPay, success: successPay } = orderPay
 
   const orderDeliver = useSelector((state) => state.orderDeliver)
   const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
 
   if (!loading) {
     //   Calculate prices
@@ -50,6 +50,7 @@ const OrderScreen = ({ match, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
+
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal')
       const script = document.createElement('script')
@@ -62,11 +63,11 @@ const OrderScreen = ({ match, history }) => {
       document.body.appendChild(script)
     }
 
-    if (!order || successPay || successDeliver || order._id !== orderId) {
+    if (!order || successPay || successDeliver) {
       dispatch({ type: ORDER_PAY_RESET })
       dispatch({ type: ORDER_DELIVER_RESET })
       dispatch(getOrderDetails(orderId))
-    } else if (order.isPaid === false) {
+    } else if (!order.isPaid) {
       if (!window.paypal) {
         addPayPalScript()
       } else {
@@ -217,7 +218,7 @@ const OrderScreen = ({ match, history }) => {
                       className='btn btn-block'
                       onClick={deliverHandler}
                     >
-                      Mark as Delivered
+                      Mark As Delivered
                     </Button>
                   </ListGroup.Item>
                 )}

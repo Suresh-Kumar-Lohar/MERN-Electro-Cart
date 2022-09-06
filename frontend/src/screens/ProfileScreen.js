@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Table, Row, Col, Button, Form } from 'react-bootstrap'
+import { Table, Form, Button, Row, Col } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
-import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 import { ListMyOrders } from '../actions/orderActions'
 
 const ProfileScreen = ({ location, history }) => {
@@ -33,8 +32,7 @@ const ProfileScreen = ({ location, history }) => {
     if (!userInfo) {
       history.push('/login')
     } else {
-      if (!user.name || success) {
-        dispatch({ type: USER_UPDATE_PROFILE_RESET })
+      if (!user.name) {
         dispatch(getUserDetails('profile'))
         dispatch(ListMyOrders())
       } else {
@@ -42,11 +40,10 @@ const ProfileScreen = ({ location, history }) => {
         setEmail(user.email)
       }
     }
-  }, [dispatch, history, userInfo, user, success])
+  }, [dispatch, history, userInfo, user])
 
   const submitHandler = (e) => {
     e.preventDefault()
-
     if (password !== confirmPassword) {
       setMessage('Passwords do not match')
     } else {
@@ -82,12 +79,12 @@ const ProfileScreen = ({ location, history }) => {
               onChange={(e) => setEmail(e.target.value)}
             ></Form.Control>
           </Form.Group>
+
           <Form.Group controlId='password'>
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Password Address</Form.Label>
             <Form.Control
               type='password'
               placeholder='Enter password'
-              autoComplete='off'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             ></Form.Control>
@@ -98,12 +95,12 @@ const ProfileScreen = ({ location, history }) => {
             <Form.Control
               type='password'
               placeholder='Confirm password'
-              autoComplete='off'
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             ></Form.Control>
           </Form.Group>
-          <Button type='submit' variant='primary' className='my-1'>
+
+          <Button type='submit' variant='primary'>
             Update
           </Button>
         </Form>
@@ -115,7 +112,7 @@ const ProfileScreen = ({ location, history }) => {
         ) : errorOrders ? (
           <Message variant='danger'>{errorOrders}</Message>
         ) : (
-          <Table striped bordered hover responsible='true' className='table-sm'>
+          <Table striped bordered hover responsive className='table-sm'>
             <thead>
               <tr>
                 <th>ID</th>
@@ -148,7 +145,7 @@ const ProfileScreen = ({ location, history }) => {
                   </td>
                   <td>
                     <LinkContainer to={`/order/${order._id}`}>
-                      <Button variant='light' className='btn-sm'>
+                      <Button className='btn-sm' variant='light'>
                         Details
                       </Button>
                     </LinkContainer>
